@@ -1,0 +1,280 @@
+:root {
+  --bg: #14161a;
+  --panel: #1e2128;
+  --btn: #2c313b;
+  --btn-active: #3d4452;
+  --fg: #e8e8ea;
+  --muted: #9aa0aa;
+  --accent: #ff9f43;
+  --rec: #d63a3a;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.4 system-ui, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#app {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
+}
+
+button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--btn);
+  color: var(--fg);
+  font: inherit;
+  touch-action: manipulation;
+}
+button:active {
+  background: var(--btn-active);
+}
+button.rec {
+  background: var(--rec);
+}
+button.primary {
+  background: var(--accent);
+  color: #1a1a1a;
+  font-weight: 600;
+}
+button:disabled {
+  opacity: 0.5;
+}
+[hidden] {
+  display: none !important;
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.group.right {
+  margin-left: auto;
+}
+
+#bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 8px;
+}
+.range-label,
+#rec-status,
+#review-info {
+  color: var(--muted);
+  font-size: 14px;
+  white-space: nowrap;
+}
+.range-label {
+  min-width: 5.5em;
+  text-align: center;
+}
+
+/* 録音後の確認・送信パネル。縦は積み、横は1行に並べる */
+#review {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  padding: 8px;
+  background: var(--panel);
+}
+@media (orientation: landscape) {
+  #review {
+    grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr) auto;
+    align-items: center;
+  }
+}
+
+input[type="text"],
+input[type="password"],
+textarea,
+select {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid #3a404c;
+  border-radius: 10px;
+  background: #101216;
+  color: var(--fg);
+  font: inherit; /* 16px未満だとAndroid/iOSで入力時に拡大されることがある */
+  user-select: text;
+  -webkit-user-select: text;
+}
+textarea {
+  resize: none;
+}
+
+/* 縦持ちは上段(高音)と下段(低音)の2段、横持ちは下段だけの1段 */
+#manuals {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.manual {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+#manual-upper {
+  display: none;
+}
+@media (orientation: portrait) {
+  #manual-upper {
+    display: flex;
+  }
+}
+.manual-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 2px 8px;
+  background: var(--panel);
+  border-top: 1px solid #000;
+}
+.manual-bar button {
+  min-height: 36px;
+}
+.manual-name {
+  color: var(--muted);
+  font-size: 13px;
+}
+@media (orientation: landscape) {
+  .manual-name {
+    display: none;
+  }
+}
+
+.keyboard {
+  flex: 1;
+  min-height: 80px;
+  position: relative;
+  display: flex;
+  touch-action: none;
+  background: #000;
+}
+
+.key {
+  -webkit-touch-callout: none;
+}
+.key.white {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 8px;
+  background: #f3f1ea;
+  border-right: 1px solid #8a8a85;
+  border-radius: 0 0 6px 6px;
+}
+.key.white span {
+  color: #666;
+  font-size: 12px;
+  pointer-events: none;
+}
+.key.black {
+  position: absolute;
+  top: 0;
+  height: 62%;
+  transform: translateX(-50%);
+  z-index: 1;
+  background: #1b1b1d;
+  border-radius: 0 0 5px 5px;
+}
+.key.white.active {
+  background: var(--accent);
+}
+.key.black.active {
+  background: #c76b12;
+}
+
+#toast {
+  position: fixed;
+  left: 50%;
+  top: calc(env(safe-area-inset-top) + 64px);
+  transform: translateX(-50%);
+  max-width: 90vw;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: #000d;
+  color: #fff;
+  font-size: 14px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+dialog {
+  width: min(92vw, 420px);
+  max-height: 90dvh;
+  padding: 16px;
+  border: 1px solid #3a404c;
+  border-radius: 14px;
+  background: var(--panel);
+  color: var(--fg);
+}
+dialog::backdrop {
+  background: #0009;
+}
+dialog h2 {
+  margin: 0 0 12px;
+  font-size: 18px;
+}
+dialog label {
+  display: block;
+  margin-bottom: 14px;
+  color: var(--muted);
+  font-size: 14px;
+}
+dialog label input,
+dialog label select {
+  margin-top: 4px;
+  color: var(--fg);
+}
+dialog label.check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--fg);
+  font-size: 16px;
+}
+dialog label.check input {
+  width: 24px;
+  height: 24px;
+  min-height: 0;
+  margin: 0;
+}
+dialog input[type="range"] {
+  width: 100%;
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+dialog button {
+  width: 100%;
+}

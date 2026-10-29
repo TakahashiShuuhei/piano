@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#14161a" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icon-192.png" />
+    <title>ピアノ</title>
+  </head>
+  <body>
+    <div id="app">
+      <header id="bar">
+        <div class="group">
+          <button id="rec-start" class="rec">● 録音</button>
+          <button id="rec-stop" class="rec" hidden>■ 停止</button>
+          <button id="rec-undo" hidden>↶ 1音戻す</button>
+          <span id="rec-status"></span>
+        </div>
+        <div class="group right">
+          <button id="outbox-badge" hidden></button>
+          <button id="open-settings" aria-label="設定">⚙</button>
+        </div>
+      </header>
+
+      <section id="review" hidden>
+        <div class="group">
+          <button id="play">▶ 再生</button>
+          <span id="review-info"></span>
+        </div>
+        <input id="title" type="text" placeholder="タイトル" autocomplete="off" />
+        <textarea id="memo" rows="1" placeholder="メモ"></textarea>
+        <div class="group">
+          <button id="send" class="primary">送信</button>
+          <button id="discard">破棄</button>
+        </div>
+      </section>
+
+      <div id="manuals">
+        <section class="manual" id="manual-upper">
+          <div class="manual-bar">
+            <span class="manual-name">上</span>
+            <button class="oct" data-dir="-1" aria-label="上段を1オクターブ下へ">◀</button>
+            <span class="range-label"></span>
+            <button class="oct" data-dir="1" aria-label="上段を1オクターブ上へ">▶</button>
+          </div>
+          <div class="keyboard"></div>
+        </section>
+        <section class="manual" id="manual-lower">
+          <div class="manual-bar">
+            <span class="manual-name">下</span>
+            <button class="oct" data-dir="-1" aria-label="下段を1オクターブ下へ">◀</button>
+            <span class="range-label"></span>
+            <button class="oct" data-dir="1" aria-label="下段を1オクターブ上へ">▶</button>
+          </div>
+          <div class="keyboard"></div>
+        </section>
+      </div>
+    </div>
+
+    <div id="toast" hidden></div>
+
+    <dialog id="settings">
+      <form method="dialog">
+        <h2>設定</h2>
+        <label>
+          lifelog APIキー
+          <input id="set-apikey" type="password" autocomplete="off" />
+        </label>
+        <label>
+          白鍵の幅 <output id="set-keywidth-out"></output>px
+          <input id="set-keywidth" type="range" step="1" />
+        </label>
+        <label>
+          下段の最低音(横持ちはこの1段)
+          <select id="set-lowest"></select>
+        </label>
+        <label>
+          上段の最低音(縦持ちのみ)
+          <select id="set-lowest-upper"></select>
+        </label>
+        <label>
+          音色
+          <select id="set-waveform">
+            <option value="sawtooth">のこぎり波</option>
+            <option value="square">矩形波</option>
+            <option value="triangle">三角波</option>
+          </select>
+        </label>
+        <label class="check">
+          <input id="set-gliss" type="checkbox" />
+          鍵盤をなぞって音を切り替える
+        </label>
+        <button class="primary">閉じる</button>
+      </form>
+    </dialog>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
