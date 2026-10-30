@@ -52,36 +52,19 @@ describe("Recorder", () => {
     expect(notes.map((n) => n.pitch)).toEqual([60, 64]);
   });
 
-  it("1音戻すで直前の音を消す", () => {
+  it("録音中に start し直すと、それまでの音を捨てて最初から録れる", () => {
     const r = new Recorder();
     r.start();
-    r.noteOn(1, 60, 0);
-    r.noteOff(1, 100);
-    r.noteOn(1, 99, 200); // ミスタップ
-    r.noteOff(1, 300);
-    r.undoLast();
-    expect(r.count).toBe(1);
-    expect(r.stop(400)).toEqual([{ pitch: 60, start: 0, dur: 100 }]);
-  });
-
-  it("全部消したら次の音が t=0 になる", () => {
-    const r = new Recorder();
+    r.noteOn(1, 99, 1000); // 失敗した演奏(押したまま)
+    r.noteOn(2, 98, 1200);
+    r.noteOff(2, 1300);
     r.start();
-    r.noteOn(1, 99, 1000);
-    r.noteOff(1, 1100);
-    r.undoLast();
-    r.noteOn(1, 60, 9000);
-    r.noteOff(1, 9100);
+    expect(r.count).toBe(0);
+    r.noteOff(1, 1400); // やり直し前に押していた指が離れても影響しない
+    r.noteOn(3, 60, 9000);
+    r.noteOff(3, 9100);
+    expect(r.recording).toBe(true);
     expect(r.stop(9200)).toEqual([{ pitch: 60, start: 0, dur: 100 }]);
-  });
-
-  it("取り消した音の noteOff が後から来ても壊れない", () => {
-    const r = new Recorder();
-    r.start();
-    r.noteOn(1, 60, 0);
-    r.undoLast();
-    r.noteOff(1, 100);
-    expect(r.stop(200)).toEqual([]);
   });
 
   it("音がなければ空配列", () => {

@@ -57,7 +57,6 @@ function createManual(sectionId: string, key: LowestKey): Manual {
       onNoteOn(id, midi, ts) {
         synth.noteOn(id, midi);
         recorder.noteOn(id, midi, ts);
-        if (recorder.recording) $("rec-status").textContent = `録音中 ${recorder.count}音`;
       },
       onNoteOff(id, _midi, ts) {
         synth.noteOff(id);
@@ -101,14 +100,15 @@ window.addEventListener("blur", () => {
 function render(): void {
   $("rec-start").hidden = phase !== "idle";
   $("rec-stop").hidden = phase !== "recording";
-  $("rec-undo").hidden = phase !== "recording";
+  $("rec-redo").hidden = phase !== "recording";
   $("review").hidden = phase !== "review";
-  $("rec-status").textContent = phase === "recording" ? "録音中 最初の音から記録します" : "";
+  renderOutbox();
 }
 
 function renderOutbox(): void {
   const badge = $<HTMLButtonElement>("outbox-badge");
-  badge.hidden = outbox.size === 0;
+  // 録音中は不要なうえ、「停止」「やり直し」と並べると狭い画面で設定ボタンが押し出される
+  badge.hidden = outbox.size === 0 || phase === "recording";
   badge.textContent = `未送信 ${outbox.size}`;
 }
 
@@ -119,11 +119,8 @@ $("rec-start").addEventListener("click", () => {
   render();
 });
 
-$("rec-undo").addEventListener("click", () => {
-  recorder.undoLast();
-  $("rec-status").textContent =
-    recorder.count === 0 ? "録音中 最初の音から記録します" : `録音中 ${recorder.count}音`;
-});
+// 確認なしで、録音済みの音を捨てて最初から録り直す(失敗したらすぐやり直したいので)。
+$("rec-redo").addEventListener("click", () => recorder.start());
 
 $("rec-stop").addEventListener("click", () => {
   pending = recorder.stop(performance.now());

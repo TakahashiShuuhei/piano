@@ -41,6 +41,7 @@ export class Recorder {
 
   start(): void {
     this.notes = [];
+    this.openById.clear();
     this.t0 = null;
     this.active = true;
   }
@@ -58,16 +59,6 @@ export class Recorder {
     if (!n) return;
     this.openById.delete(id);
     if (this.t0 !== null) n.end = ts - this.t0;
-  }
-
-  // 直前に弾いた1音を取り消す。全て消えたら次の音を t=0 に戻す。
-  undoLast(): void {
-    const last = this.notes.pop();
-    if (!last) return;
-    for (const [id, n] of this.openById) {
-      if (n === last) this.openById.delete(id);
-    }
-    if (this.notes.length === 0) this.t0 = null;
   }
 
   stop(ts: number): Note[] {
